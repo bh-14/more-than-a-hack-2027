@@ -27,6 +27,17 @@ This writes `evaluation/results/<team_name>.csv`, runs the official validator on
 SHA-256. It runs on CPU only and uses no randomness, so the same data and the same commit always
 give the same bytes. The first run parses the raw tracking and caches it under `<data dir>/cache/`.
 
+## Rehearse without the match data
+
+```bash
+python scripts/make_fake_bundle.py                 # an open game in the provided file formats
+export MTAH_DATA_DIR=external_data/fake_bundle     # PowerShell: $env:MTAH_DATA_DIR = "..."
+python scripts/make_submission.py --team rehearsal
+python evaluation/run_evaluation.py --gt external_data/fake_bundle/fake_gt.csv
+```
+
+Ignore the `baseline_*` rows there: they were computed on the real match, not on the fake one.
+
 ## Choose parameters (only on other games)
 
 ```bash
@@ -50,8 +61,10 @@ answer in issue #10). Log each change in `docs/DECISIONS.md`.
 | `possession/io/bar_ath.py` | loader for the provided match (with a cache) |
 | `possession/external/` | open games (`idsse.py`), label conversion (`labels.py`), ATD noise model (`noise.py`) |
 | `possession/pipeline.py` | `Match` + params → one code per frame |
+| `possession/features.py`, `possession/models.py` | collective features and the logistic models of M1 and M4 |
+| `models/` | committed weights, trained on the open games only (`scripts/train_models.py`) |
 | `configs/params.toml` | every threshold and weight |
-| `scripts/` | `make_submission.py`, `validate_external.py`, `sweep.py` |
+| `scripts/` | `make_submission.py`, `validate_external.py`, `sweep.py`, `train_models.py`, `make_fake_bundle.py` |
 | `docs/` | team plan (`PLANO.md`), technical document (`TECHNICAL.md`), decision log (`DECISIONS.md`) |
 
 ## Data and licences

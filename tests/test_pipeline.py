@@ -21,7 +21,12 @@ def test_labels_only_inside_halves():
 def test_beats_baseline_on_noisy_synthetic():
     match, gt = make_match(seed=3)
     noisy = noise.degrade(match, seed=3)
-    ours = score(gt, pipeline.label_match(noisy, pipeline.load_params()))
+    # The learned models (M1 model, M4) are fitted on real football; this toy match is not, so
+    # the check covers the hand-written modules and the decoder only.
+    params = pipeline.load_params()
+    params["weights"]["shape"] = 0.0
+    params["dead_ball"]["model_weight"] = 0.0
+    ours = score(gt, pipeline.label_match(noisy, params))
     floor = score(gt, baselines.nearest_player(noisy, 50))
     assert ours["spell_f1_mean"] > floor["spell_f1_mean"]
 

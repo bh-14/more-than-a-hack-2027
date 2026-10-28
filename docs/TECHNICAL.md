@@ -34,7 +34,7 @@ parameters.
 
 | Dataset | Source | Labelled by | Amount | Used for |
 |---|---|---|---|---|
-| IDSSE / DFL open data | Bassek, Rein, Weber & Memmert (2025), *Scientific Data* 12, 195, CC BY 4.0, figshare | DFL official data (BallStatus, BallPossession) | 7 Bundesliga matches, ~94 min graded each | choosing every threshold and weight; training M4 |
+| IDSSE / DFL open data | Bassek, Rein, Weber & Memmert (2025), *Scientific Data* 12, 195, CC BY 4.0, figshare | DFL official data (BallStatus, BallPossession) | 7 Bundesliga matches, ~94 min graded each | 4 matches train the two logistic models (M1 dead ball, M4 shape; `scripts/train_models.py`); 3 matches choose every threshold and weight |
 
 Labels from the open games are brought to the challenge's definition of possession with one a
 priori rule (`possession/external/labels.py`): a spell shorter than 2 s that follows the other
