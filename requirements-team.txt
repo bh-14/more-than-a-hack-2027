@@ -1,0 +1,11 @@
+# Pinned dependencies of the team pipeline (possession/, scripts/, tests/). Python >= 3.12.
+#
+#   python -m venv .venv
+#   .venv/Scripts/python -m pip install -r requirements-team.txt     (Windows)
+#   .venv/bin/python -m pip install -r requirements-team.txt         (macOS / Linux)
+#
+# Exact pins on purpose: the submission must be reproducible byte for byte (SUBMISSION.md).
+# The starter notebooks need requirements-starter.txt on top of this.
+numpy==2.5.4
+pandas==3.1.0
+pytest==9.2.0
