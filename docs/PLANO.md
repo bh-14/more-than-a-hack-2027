@@ -50,10 +50,10 @@ na partida e nos jogos abertos. O decodificador soma tudo e gera as posses.
 
 | Módulo | Arquivo | Estado | O que falta |
 |---|---|---|---|
-| M1 Bola morta | `possession/evidence/dead_ball.py` | v1: bola fora, bola perdida na beira do campo, campo inteiro devagar, bola parada, poucos jogadores | moldes de reinício (saída, escanteio, tiro de meta, lateral), set pieces do Smart Tagging, gols, quem reinicia |
+| M1 Bola morta | `possession/evidence/dead_ball.py` | v2: pistas manuais + **modelo aprendido** nos jogos abertos (`models/dead_v1.json`, 92% de acerto) | moldes de reinício (saída, escanteio, tiro de meta, lateral), set pieces do Smart Tagging, gols, quem reinicia |
 | M2 Controle | `possession/evidence/control.py` | v1: distância por time, bola em voo, disputa | passe e interceptação, velocidade relativa bola-jogador |
 | M3 Lacunas | `possession/evidence/gaps.py` | v1: interpolação de até 1 s, "ponte" quando o mesmo time aparece nas duas pontas | extrapolar o passe para estimar o momento da troca |
-| M4 Forma dos times | `possession/evidence/shape.py` | vazio | modelo coletivo treinado nos jogos abertos com ruído |
+| M4 Forma dos times | `possession/evidence/shape.py` | v1: **modelo aprendido** só com a forma dos times, sem a bola (`models/shape_v1.json`, 82% de acerto) | pressão perto da última bola, contexto temporal, modelo sequencial se o linear saturar |
 | M5 Smart Tagging | `possession/evidence/tagging.py` | vazio | prior fraco, peso a priori |
 | M6 Decodificador | `possession/decode/viterbi.py` | v1: Viterbi semi-Markov com custo de troca e duração mínima | ajuste fino, refinamento de fronteiras |
 
@@ -69,6 +69,11 @@ baseline_smooth50 nos mesmos dados. O baseline faz 0,243 na partida real, sinal 
 está numa escala parecida. Uma varredura dos custos do decodificador ficou plana (0,36–0,38,
 dentro do ruído), então **o ganho agora vem das evidências**, principalmente bola morta (M1) e
 forma dos times quando a bola some (M4).
+
+**v2 (28/10), com os modelos aprendidos do M1 e do M4:** spellF1 **0,514** e macroF1 **0,838** nos
+jogos de ajuste (baseline: 0,229 / 0,409), e o resultado se mantém com outra semente de ruído. Os
+modelos são retreinados com `python scripts/train_models.py`. Para ensaiar a submissão inteira sem os
+dados da partida, use `scripts/make_fake_bundle.py` (instruções no topo do arquivo).
 
 **Extras (decisão em 07/11):**
 - **E1:** sincronizar a câmera broadcast com a tática (posições dos jogadores no campo) para recuperar

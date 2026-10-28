@@ -12,7 +12,7 @@
 dead_ball = 1.0
 control = 1.0
 gaps = 1.0
-shape = 0.0     # M4 not implemented yet
+shape = 0.5     # M4, learned (models/shape_v1.json)
 tagging = 0.0   # M5 not implemented yet; a priori weight when it is
 
 [decoder]
@@ -55,3 +55,9 @@ slow_score = 0.6
 still_speed = 0.5     # m/s: ball not moving
 still_window = 50
 still_score = 0.5
+model_weight = 1.0    # learned dead-ball log-odds (models/dead_v1.json)
+model_clip = 8.0
+
+[shape]
+clip = 8.0            # log-odds cap
+seen_factor = 0.3     # vote multiplier where the ball is seen (M2 knows better there)

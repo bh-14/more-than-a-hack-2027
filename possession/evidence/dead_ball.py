@@ -9,6 +9,10 @@ v1 signals:
   * almost nobody tracked (before kickoff, halftime, after the whistle)
   * the whole pitch slows down (whistle -> players walk); a fast pitch is evidence of live play
   * the ball sits still for a while (placed for a free kick, corner, goal kick)
+  * a ball last seen at the edge of the pitch and lost since
+  * a logistic model over pitch and ball features (possession/features.py), trained on the open
+    games by scripts/train_models.py -- weighs the cues above together and adds the shape of the
+    whole pitch; models/dead_v1.json
 
 Next steps for the owner: restart templates (kickoff, corner, goal kick, throw-in) from player
 and ball positions, Smart Tagging SET PIECES as restart anchors, the long stoppage after a goal,
@@ -17,8 +21,12 @@ and which side restarts (throw-ins and goal kicks usually go to the side that di
 
 import numpy as np
 
+from .. import features as collective
+from .. import models
 from ..contract import D, Evidence
 from ..geometry import rolling_fraction, rolling_nanmean
+
+MODEL = "dead_v1"
 
 
 def prev_seen_index(seen):
@@ -58,4 +66,13 @@ def compute(match, features, params):
                                   < params["still_speed"])
     share = rolling_fraction(still, params["still_window"])
     scores[:, D] += params["still_score"] * np.clip(2.0 * share - 1.0, 0.0, 1.0).astype(np.float32)
+
+    # Learned: the same kind of cues, weighed together by a model fitted on the open games.
+    model = models.load(MODEL)
+    if model is not None and params["model_weight"]:
+        _, _, names, X = collective.cached(match, features)
+        if names != model["features"]:
+            raise ValueError("{} was trained on other features; retrain it".format(MODEL))
+        odds = np.clip(models.logit(model, X), -params["model_clip"], params["model_clip"])
+        scores[:, D] += (params["model_weight"] * odds).astype(np.float32)
     return Evidence("dead_ball", scores)
