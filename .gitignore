@@ -62,3 +62,7 @@ __pycache__/
 venv/
 env/
 .DS_Store
+
+# -- team pipeline -----------------------------------------------------------------------------
+# Open datasets (downloaded by possession/external/idsse.py) and their caches.
+external_data/

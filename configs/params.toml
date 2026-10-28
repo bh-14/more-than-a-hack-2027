@@ -1,0 +1,57 @@
+# Every threshold and weight the pipeline uses, in one place.
+#
+# RULE: each value here is chosen on other games (scripts/validate_external.py on the open
+# datasets), or set a priori and marked as such. Never on the provided match, not even on the
+# five public minutes (RULES.md, organisers' answer in issue #10). Record every change, with the
+# run that justified it, in docs/DECISIONS.md.
+#
+# Units: metres, seconds -> frames at 25 fps, and scores in log-likelihood units.
+
+[weights]
+# Multiplier per evidence module. 0 switches a module off.
+dead_ball = 1.0
+control = 1.0
+gaps = 1.0
+shape = 0.0     # M4 not implemented yet
+tagging = 0.0   # M5 not implemented yet; a priori weight when it is
+
+[decoder]
+switch_cost = 12.0          # H <-> A
+to_dead_cost = 8.0          # H/A -> D
+from_dead_cost = 8.0        # D -> H/A
+min_possession_frames = 25  # 1 s
+min_dead_frames = 25        # 1 s
+
+[control]
+control_radius = 1.5   # m: within this the nearest player is playing the ball
+falloff = 3.0          # m: vote fades to 0 at control_radius + falloff
+contest_margin = 1.0   # m: how much closer one side must be for a full vote
+flight_speed = 12.0    # m/s: faster than this the ball is a pass or a shot
+flight_factor = 0.2    # vote multiplier while the ball is in flight
+
+[gaps]
+control_radius = 1.5
+falloff = 3.0
+contest_margin = 1.0
+flight_speed = 12.0
+flight_factor = 0.2
+max_interp_frames = 25    # interpolate gaps up to 1 s
+interp_weight = 0.5
+max_bridge_frames = 250   # bridge gaps up to 10 s
+bridge_min_vote = 0.5
+bridge_score = 0.05
+
+[dead_ball]
+out_margin = 0.5      # m beyond the line
+out_score = 3.0
+edge_margin = 1.0     # m inside the line: a ball last seen here and then lost is probably out
+edge_score = 0.5
+min_players = 12      # fewer tracked objects than this: nobody is playing
+empty_score = 3.0
+slow_window = 25      # +/- frames for the pitch pace
+slow_speed = 1.2      # m/s median player speed below which play has probably stopped
+slow_scale = 0.8
+slow_score = 0.6
+still_speed = 0.5     # m/s: ball not moving
+still_window = 50
+still_score = 0.5
